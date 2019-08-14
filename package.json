@@ -1,42 +1,114 @@
 {
-	"name": "auto-task",
-	"displayName": "Auto Task",
-	"description": "Automatically run tasks at an interval",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.37.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:extension.helloWorld"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.37.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
-		"tslint": "^5.12.1",
-		"vscode-test": "^1.0.2"
-	}
+  "name": "auto-task",
+  "displayName": "Auto Task",
+  "description": "Automatically run tasks at an interval",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.37.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.auto-task.scheduleTask",
+    "onCommand:extension.auto-task.cancelTask"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.auto-task.scheduleTask",
+        "title": "Schedule recurring task - Auto Task"
+      },
+      {
+        "command": "extension.auto-task.cancelTask",
+        "title": "Cancel scheduled task - Auto Task"
+      }
+    ],
+    "configuration": {
+      "title": "Auto Task configuration",
+      "properties": {
+        "auto-task.scheduledTaskConfigurations": {
+          "type": "array",
+          "default": [],
+          "description": "Define your task configurations here",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "The name of the task you want to run. It must be the exact name you've used in tasks.json"
+              },
+              "timeframe": {
+                "type": "string",
+                "description": "How often you want the task to run, in hh:mm:ss format. For example, 00:00:30 would cause my task to execute every 30 seconds. Set this to 00:00:00 to only run the task once."
+              },
+              "onlyIfChanged": {
+                "type": "boolean",
+                "default": false,
+                "description": "When this is true, the task will only run if files have been saved (via the editor) since the last execution"
+              },
+              "disableFocus": {
+                "type": "boolean",
+                "default": false,
+                "description": "Set this to true to stop focus being given to the task"
+              },
+              "disableInformationMessages": {
+                "type": "boolean",
+                "default": false,
+                "description": "Set this to true to disable information messages like 'Task <taskname> has been executed'"
+              },
+              "autoStart": {
+                "type": "boolean",
+                "default": false,
+                "description": "Set this to true to automatically start the task when vscode opens"
+              }
+            },
+            "required": [
+              "name",
+              "timeframe"
+            ]
+          }
+        },
+        "onlyIfChanged": {
+          "type": "boolean",
+          "default": false,
+          "description": "When this is true, tasks will only run if files have been saved (via the editor) since the last execution. Can be overriden by the same setting for an individual task"
+        },
+        "disableFocusGlobal": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set this to true to stop focus being given to the task. Can be overriden by the same setting for an individual task"
+        },
+        "disableInformationMessagesGlobal": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set this to true to disable information messages like 'Task <taskname> has been executed'. Can be overriden by the same setting for an individual task"
+        },
+        "autoStartGlobal": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set this to true to automatically start tasks when vscode opens. Can be overriden by the same setting for an individual task"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^10.12.21",
+    "@types/vscode": "^1.37.0",
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "typescript": "^3.3.1",
+    "tslint": "^5.12.1",
+    "vscode-test": "^1.0.2"
+  }
 }

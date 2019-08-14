@@ -7,3 +7,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 - Initial release
+- [x] Implement starting a scheduled task
+- [x] Implement cancelling a scheduled task
+- [] Implement task onlyIfChanged
+- [] Implement task disableFocus
+- [] Implement task disableInformationMessages
+- [] Implement task autoStart
+- [] Implement global onlyIfChanged
+- [] Implement global disableFocus
+- [] Implement global disableInformationMessages
+- [] Implement global autoStart
