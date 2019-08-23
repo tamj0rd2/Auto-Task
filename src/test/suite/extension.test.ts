@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+/*import * as assert from 'assert';
 import { before } from 'mocha';
 
 // You can import and use all API from the 'vscode' module
@@ -16,3 +16,4 @@ suite('Extension Test Suite', () => {
 		assert.equal(-1, [1, 2, 3].indexOf(0));
 	});
 });
+*/

@@ -3,11 +3,15 @@ import * as vscode from "vscode";
 const TASK_CONFIG_KEY = "auto-task.scheduledTaskConfigurations";
 const SCHEDULE_TASK_COMMAND = "extension.auto-task.scheduleTask";
 const CANCEL_TASK_COMMAND = "extension.auto-task.cancelTask";
+const AUTO_TASK_COMMAND = "extension.auto-task";
 
+const scheduledTasks: { [index: string]: ScheduledTask } = {};
+
+// TODO reload configuredTasks
 export function activate(context: vscode.ExtensionContext) {
-  const scheduledTasks: { [index: string]: ScheduledTask } = {};
+  const autoTask = vscode.commands.registerCommand(AUTO_TASK_COMMAND, autoTaskCallback);
 
-  let scheduleTask = vscode.commands.registerCommand(SCHEDULE_TASK_COMMAND, async () => {
+  const scheduleTask = vscode.commands.registerCommand(SCHEDULE_TASK_COMMAND, async () => {
     const configuredTasks = getConfiguredTasks();
 
     // there should be a description that shows the source
@@ -19,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const configuredTask = configuredTasks.find(t => t.name === selectedTaskName)!;
 
-    let vscodeTask = (await vscode.tasks.fetchTasks()).find(t => t.name === configuredTask.name);
+    const vscodeTask = (await vscode.tasks.fetchTasks()).find(t => t.name === configuredTask.name);
 
     if (!vscodeTask) {
       vscode.window.showErrorMessage("Couldn't start the task " + configuredTask.name + " :(");
@@ -40,7 +44,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     scheduledTasks[configuredTask.name] = {
       ...configuredTask,
-      taskExecution: currentTaskExecution,
       interval: setInterval(async () => {
         if (!vscode.tasks.taskExecutions.includes(scheduledTasks[configuredTask.name].taskExecution)) {
           const nextTaskExecution = await vscode.tasks.executeTask(vscodeTask!);
@@ -49,11 +52,12 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
           vscode.window.showWarningMessage(configuredTask.name + " is still executing");
         }
-      }, recurTime)
+      }, recurTime),
+      taskExecution: currentTaskExecution
     };
   });
 
-  let cancelTask = vscode.commands.registerCommand(CANCEL_TASK_COMMAND, async () => {
+  const cancelTask = vscode.commands.registerCommand(CANCEL_TASK_COMMAND, async () => {
     const configuredTasks = getConfiguredTasks();
 
     // TODO: there should be an information message like "No tasks have been scheduled"
@@ -70,6 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(scheduleTask);
   context.subscriptions.push(cancelTask);
+  context.subscriptions.push(autoTask);
 }
 
 export function deactivate() {}
@@ -105,4 +110,33 @@ function parseTime(timeframe: string): number {
 
 function getConfiguredTasks(): ConfiguredTask[] {
   return vscode.workspace.getConfiguration().get(TASK_CONFIG_KEY) as ConfiguredTask[];
+}
+
+function autoTaskCallback() {
+  const quickPick = vscode.window.createQuickPick();
+  quickPick.items = [
+    ...getConfiguredTasks().map(mapToQuickPickItem(false)),
+    ...toArray(scheduledTasks).map(mapToQuickPickItem(true))
+  ];
+
+  quickPick.show();
+
+  // todo: dispose of this
+  quickPick.onDidAccept(() => {
+    console.dir(quickPick.selectedItems[0]);
+  });
+}
+
+function mapToQuickPickItem(isScheduled: boolean): (configuredTask: ConfiguredTask) => vscode.QuickPickItem {
+  return (configuredTask: ConfiguredTask): vscode.QuickPickItem => ({
+    label: configuredTask.name,
+    description: isScheduled ? "(Cancel this scheduled task)" : "(Start running this scheduled task)"
+  });
+}
+
+function toArray<T>(obj: { [index: string]: T }) {
+  return Object.keys(obj).reduce((accum: T[], key) => {
+    accum.push(obj[key]);
+    return accum;
+  }, []);
 }

@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:extension.auto-task.scheduleTask",
-    "onCommand:extension.auto-task.cancelTask"
+    "onCommand:extension.auto-task.cancelTask",
+    "onCommand:extension.auto-task"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -23,6 +24,10 @@
       {
         "command": "extension.auto-task.cancelTask",
         "title": "Cancel scheduled task - Auto Task"
+      },
+      {
+        "command": "extension.auto-task",
+        "title": "Auto Task"
       }
     ],
     "configuration": {
@@ -104,11 +109,14 @@
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
+    "@types/should": "^13.0.0",
     "@types/vscode": "^1.37.0",
     "glob": "^7.1.4",
     "mocha": "^6.1.4",
-    "typescript": "^3.3.1",
+    "should": "^13.2.3",
     "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.1",
     "vscode-test": "^1.0.2"
   }
 }
